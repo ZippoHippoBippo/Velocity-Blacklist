@@ -1,1 +1,1 @@
-{"id":"blacklistplugin","name":"BlacklistPlugin","version":"1.0","authors":["Zippy"],"dependencies":[],"main":"me.ZippyGamer.Blacklist.velocityBlacklist.Main"}
+{"id":"blacklist","name":"BlacklistPlugin","version":"1.0.1","authors":["Zippy"],"dependencies":[],"main":"blacklist.plugin.errin.dev.Main"}

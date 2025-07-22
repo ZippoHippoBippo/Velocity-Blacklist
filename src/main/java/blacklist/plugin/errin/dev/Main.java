@@ -1,4 +1,4 @@
-package me.ZippyGamer.Blacklist.velocityBlacklist;
+package blacklist.plugin.errin.dev;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -10,12 +10,12 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
-@Plugin(id = "blacklistplugin", name = "BlacklistPlugin", version = "1.0", authors = {"Zippy"})
+@Plugin(id = "blacklist", name = "BlacklistPlugin", version = "1.0.1", authors = {"Zippy"})
 public class Main {
 
     private final Path dataDirectory;
@@ -26,20 +26,43 @@ public class Main {
     public Main(Logger logger, @com.velocitypowered.api.plugin.annotation.DataDirectory Path dataDirectory) {
         this.logger = logger;
         this.dataDirectory = dataDirectory;
-        logger.info("Made with <3 (and pain) by zippy (errin.minecraft@gmail.com)");
+        logger.info("Made with <3 (and pain) by Errin (dev@errin.dev)");
         loadBlacklistData();
     }
 
     protected void loadBlacklistData() {
         Path jsonFile = dataDirectory.resolve("blacklist.json");
-        try (FileReader reader = new FileReader(jsonFile.toFile())) {
-            blacklistData = JsonParser.parseReader(reader).getAsJsonObject();
-        } catch (IOException e) {
-            logger.warning("Failed to load blacklist.json.");
-            blacklistData = new JsonObject();
-            blacklistData.add("ips", new JsonArray());
-            blacklistData.add("usernames", new JsonArray());
+        File file = jsonFile.toFile();
+        
+        // Ensure parent directories exist
+        File parentDir = file.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            logger.info("Creating parent directory: " + parentDir.getAbsolutePath());
+            boolean created = parentDir.mkdirs();
+            if (!created) {
+                logger.warning("Failed to create parent directory: " + parentDir.getAbsolutePath());
+            }
         }
+        
+        if (file.exists()) {
+            try (FileReader reader = new FileReader(file)) {
+                blacklistData = JsonParser.parseReader(reader).getAsJsonObject();
+                logger.info("Successfully loaded blacklist.json");
+            } catch (IOException e) {
+                logger.warning("Failed to load blacklist.json: " + e.getMessage());
+                createDefaultBlacklist();
+            }
+        } else {
+            logger.info("blacklist.json does not exist, creating default file");
+            createDefaultBlacklist();
+            saveBlacklistData(); // Save the default file
+        }
+    }
+    
+    private void createDefaultBlacklist() {
+        blacklistData = new JsonObject();
+        blacklistData.add("ips", new JsonArray());
+        blacklistData.add("usernames", new JsonArray());
     }
 
     private void saveBlacklistData() {

@@ -1,4 +1,4 @@
-package me.ZippyGamer.Blacklist.velocityBlacklist;
+package blacklist.plugin.errin.dev;
 
 // The constants are replaced before compilation
 public class BuildConstants {
